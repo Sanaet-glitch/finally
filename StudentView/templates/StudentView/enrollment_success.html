@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enrollment Successful - SmartCampus Attendance Portal</title>
+    <link rel="stylesheet" href="{% static 'StudentView/submitted.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      .success-container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+      }
+      
+      .success-icon {
+        color: #28a745;
+        font-size: 64px;
+        margin-bottom: 20px;
+      }
+      
+      .success-title {
+        color: #28a745;
+        margin-bottom: 20px;
+      }
+      
+      .enrollment-details {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        text-align: left;
+      }
+      
+      .detail-item {
+        margin-bottom: 10px;
+      }
+      
+      .detail-label {
+        font-weight: 600;
+        color: #495057;
+        display: inline-block;
+        width: 120px;
+      }
+      
+      .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+      }
+      
+      .action-button {
+        padding: 12px 25px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .primary-button {
+        background-color: #3e4eb8;
+        color: white;
+      }
+      
+      .secondary-button {
+        background-color: #f8f9fa;
+        color: #495057;
+        border: 1px solid #ced4da;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <h1 class="header-title">SmartCampus</h1>
+      <h2>Attendance Portal</h2>
+    </header>
+
+    <div class="container">
+      <div class="success-container">
+        <i class="fas fa-check-circle success-icon"></i>
+        <h2 class="success-title">Enrollment Successful!</h2>
+        
+        <p>You have successfully enrolled in the course. You can now mark attendance when your instructor starts a session.</p>
+        
+        <div class="enrollment-details">
+          <div class="detail-item">
+            <span class="detail-label">Course Code:</span>
+            <span>{{ subject.code }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Course Name:</span>
+            <span>{{ subject.name }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Student:</span>
+            <span>{{ student.s_fname }} {{ student.s_lname }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Roll Number:</span>
+            <span>{{ student.s_roll }}</span>
+          </div>
+        </div>
+        
+        <div class="action-buttons">
+          <a href="{% url 'student_enrollment' %}" class="action-button primary-button">
+            <i class="fas fa-plus"></i> Enroll in Another Course
+          </a>
+          <a href="{% url 'view_student_enrollments' %}" class="action-button secondary-button">
+            <i class="fas fa-list"></i> View My Courses
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>&copy; SmartCampus Attendance System {% now "Y" %}</p>
+    </footer>
+  </body>
+</html> 

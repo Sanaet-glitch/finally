@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - SmartCampus Attendance System</title>
+    <link rel="stylesheet" href="{% static 'FacultyView/login.css' %}" />
+  </head>
+  <body>
+    <header>
+      <h1>SmartCampus</h1>
+      <h2>Attendance Portal</h2>
+    </header>
+    
+    <main>
+      <div class="login-container">
+        <div class="login-card">
+          <h2>User Login</h2>
+          
+          {% if form.errors %}
+          <div class="error-message">
+            Your username and password didn't match. Please try again.
+          </div>
+          {% endif %}
+          
+          {% if message and request.method == 'GET' %}
+          <div class="success-message">
+            {{ message }}
+          </div>
+          {% endif %}
+          
+          {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="message {{ message.tags }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+          
+          <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="id_username">Username:</label>
+              <input type="text" name="username" id="id_username" required autofocus>
+            </div>
+            
+            <div class="form-group">
+              <label for="id_password">Password:</label>
+              <input type="password" name="password" id="id_password" required>
+            </div>
+            
+            <button type="submit" class="login-button">Log In</button>
+          </form>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>&copy; SmartCampus Attendance System {% now "Y" %}</p>
+    </footer>
+  </body>
+</html> 

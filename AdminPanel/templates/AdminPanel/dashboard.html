@@ -1,0 +1,163 @@
+{% extends 'AdminPanel/base.html' %}
+
+{% block title %}Admin Dashboard - QR Attendance System{% endblock %}
+
+{% block content_title %}Dashboard{% endblock %}
+
+{% block content_actions %}
+<a href="{% url 'admin_faculty_create' %}" class="btn btn-primary">
+    <i class="fas fa-plus"></i> New Faculty
+</a>
+<a href="{% url 'register_student' %}" class="btn btn-success">
+    <i class="fas fa-user-plus"></i> Register Student
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon blue">
+            <i class="fas fa-chalkboard-teacher"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-value">{{ faculty_count }}</div>
+            <div class="stat-label">Faculty</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon green">
+            <i class="fas fa-user-graduate"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-value">{{ student_count }}</div>
+            <div class="stat-label">Students</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon orange">
+            <i class="fas fa-book"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-value">{{ course_count }}</div>
+            <div class="stat-label">Courses</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon red">
+            <i class="fas fa-clipboard-check"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-value">{{ attendance_count }}</div>
+            <div class="stat-label">Today's Attendance</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="card simplified-card">
+        <div class="card-header">
+            <h5 class="card-title">System Overview</h5>
+        </div>
+        <div class="card-body">
+            <div class="overview-grid">
+                <div class="overview-item">
+                    <i class="fas fa-check-circle text-success"></i>
+                    <span>QR Code Generation Active</span>
+                </div>
+                <div class="overview-item">
+                    <i class="fas fa-server text-primary"></i>
+                    <span>Server Status: Online</span>
+                </div>
+                <div class="overview-item">
+                    <i class="fas fa-database text-info"></i>
+                    <span>Database: Connected</span>
+                </div>
+                <div class="overview-item">
+                    <i class="fas fa-shield-alt text-warning"></i>
+                    <span>Security: IP Protection Active</span>
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <h6>Quick Actions</h6>
+                <div class="action-buttons">
+                    <a href="{% url 'admin_faculty_list' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-users"></i> Manage Faculty
+                    </a>
+                    <a href="{% url 'admin_student_list' %}" class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-user-graduate"></i> Manage Students
+                    </a>
+                    <a href="{% url 'admin_system_config' %}" class="btn btn-sm btn-outline-info">
+                        <i class="fas fa-cogs"></i> System Settings
+                    </a>
+                    <a href="{% url 'admin_action_logs' %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-history"></i> Activity Logs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .overview-item {
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .overview-item i {
+        margin-right: 10px;
+        font-size: 18px;
+    }
+    
+    .quick-actions {
+        margin-top: 20px;
+        border-top: 1px solid #eee;
+        padding-top: 20px;
+    }
+    
+    .quick-actions h6 {
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+    
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .simplified-card {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .text-success {
+        color: var(--success-color);
+    }
+    
+    .text-primary {
+        color: var(--primary-color);
+    }
+    
+    .text-info {
+        color: var(--info-color);
+    }
+    
+    .text-warning {
+        color: var(--warning-color);
+    }
+</style>
+{% endblock %} 

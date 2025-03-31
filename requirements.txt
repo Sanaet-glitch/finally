@@ -1,3 +1,4 @@
 qrcode
 django
 pillow
+django-ipware

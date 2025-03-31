@@ -1,0 +1,321 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Courses - SmartCampus Attendance System</title>
+    <link rel="stylesheet" href="{% static 'FacultyView/Index_Style.css' %}" />
+    <link rel="stylesheet" href="{% static 'FacultyView/register.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      /* Additional styles for course management */
+      .tab-container {
+        margin-bottom: 30px;
+      }
+      
+      .tab-buttons {
+        display: flex;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 20px;
+      }
+      
+      .tab-button {
+        padding: 10px 20px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        color: #666;
+        position: relative;
+        transition: all 0.3s;
+      }
+      
+      .tab-button.active {
+        color: #3e4eb8;
+      }
+      
+      .tab-button.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: #3e4eb8;
+      }
+      
+      .tab-content {
+        display: none;
+      }
+      
+      .tab-content.active {
+        display: block;
+      }
+      
+      .course-list {
+        margin-top: 20px;
+      }
+      
+      .course-item {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .course-details {
+        flex: 1;
+      }
+      
+      .course-code {
+        font-weight: 600;
+        color: #3e4eb8;
+      }
+      
+      .course-name {
+        margin-top: 5px;
+        color: #333;
+      }
+      
+      .course-meta {
+        font-size: 14px;
+        color: #666;
+        margin-top: 5px;
+      }
+      
+      .course-controls {
+        display: flex;
+        gap: 10px;
+      }
+      
+      .update-key-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      
+      .key-input {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 150px;
+      }
+      
+      .update-key-button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      
+      .view-students-button {
+        background-color: #17a2b8;
+        color: white;
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <div class="header-title">
+          <h1>SmartCampus</h1>
+          <h2>Attendance Portal</h2>
+        </div>
+        <div class="user-controls">
+          <span class="username">Welcome, {{ user.username }}</span>
+          <form method="POST" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="logout-button">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </form>
+        </div>
+      </div>
+    </header>
+    
+    <main class="register-main">
+      <div class="container">
+        <div class="content-box">
+          <div class="box-header">
+            <h2><i class="fas fa-book"></i> Manage Courses</h2>
+            <a href="{% url 'faculty_view' %}" class="back-link">
+              <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+          </div>
+          
+          {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="message {{ message.tags }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+          
+          <div class="tab-container">
+            <div class="tab-buttons">
+              <button class="tab-button active" onclick="showTab('existing-courses')">
+                <i class="fas fa-list"></i> Existing Courses
+              </button>
+              <button class="tab-button" onclick="showTab('create-course')">
+                <i class="fas fa-plus"></i> Create New Course
+              </button>
+            </div>
+            
+            <div id="existing-courses" class="tab-content active">
+              <h3>Your Courses</h3>
+              
+              {% if subjects %}
+              <div class="course-list">
+                {% for subject in subjects %}
+                <div class="course-item">
+                  <div class="course-details">
+                    <div class="course-code">{{ subject.code }}</div>
+                    <div class="course-name">{{ subject.name }}</div>
+                    <div class="course-meta">
+                      <span>Branch: {{ subject.branch }}</span> | 
+                      <span>Year: {{ subject.year }}</span>
+                      {% if subject.section %}
+                      | <span>Section: {{ subject.section }}</span>
+                      {% endif %}
+                      | <span>Enrolled Students: {{ subject.enrolled_count }}</span>
+                    </div>
+                  </div>
+                  <div class="course-controls">
+                    <form class="update-key-form" method="POST">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="update_key">
+                      <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                      <input type="text" name="enrollment_key" class="key-input" 
+                             value="{{ subject.enrollment_key|default:'' }}" 
+                             placeholder="Enrollment Key">
+                      <button type="submit" class="update-key-button">
+                        <i class="fas fa-key"></i> Update Key
+                      </button>
+                    </form>
+                    <a href="{% url 'course_enrollments' subject.id %}" class="view-students-button">
+                      <i class="fas fa-users"></i> View Students
+                    </a>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              {% else %}
+              <p>No courses found. Create a new course to get started.</p>
+              {% endif %}
+            </div>
+            
+            <div id="create-course" class="tab-content">
+              <h3>Create New Course</h3>
+              
+              <form method="POST" class="registration-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_course">
+                
+                <div class="form-group">
+                  <label for="code">Course Code: <span class="required">*</span></label>
+                  <input type="text" id="code" name="code" required placeholder="e.g., CS101">
+                </div>
+                
+                <div class="form-group">
+                  <label for="name">Course Name: <span class="required">*</span></label>
+                  <input type="text" id="name" name="name" required placeholder="e.g., Introduction to Computer Science">
+                </div>
+                
+                <div class="form-group">
+                  <label for="branch">Branch: <span class="required">*</span></label>
+                  <select id="branch" name="branch" required>
+                    <option value="">-- Select Branch --</option>
+                    {% for branch in branches %}
+                      <option value="{{ branch.id }}">{{ branch.branch }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="year">Year: <span class="required">*</span></label>
+                  <select id="year" name="year" required>
+                    <option value="">-- Select Year --</option>
+                    {% for year in years %}
+                      <option value="{{ year.id }}">{{ year.year }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="section">Section:</label>
+                  <select id="section" name="section">
+                    <option value="">-- Select Section (Optional) --</option>
+                    {% for section in sections %}
+                      <option value="{{ section.id }}">{{ section.section }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="enrollment_key">Enrollment Key:</label>
+                  <input type="text" id="enrollment_key" name="enrollment_key" placeholder="e.g., cs101key">
+                </div>
+                
+                <div class="form-note">
+                  <p><i class="fas fa-info-circle"></i> Students will use the enrollment key to enroll in this course.</p>
+                </div>
+                
+                <div class="form-actions">
+                  <button type="submit" class="register-button">
+                    <i class="fas fa-plus"></i> Create Course
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>&copy; SmartCampus Attendance System {% now "Y" %}</p>
+    </footer>
+    
+    <script>
+      function showTab(tabId) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        
+        // Remove active class from all tab buttons
+        document.querySelectorAll('.tab-button').forEach(button => {
+          button.classList.remove('active');
+        });
+        
+        // Show the selected tab content
+        document.getElementById(tabId).classList.add('active');
+        
+        // Add active class to the clicked button
+        document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+      }
+    </script>
+  </body>
+</html> 

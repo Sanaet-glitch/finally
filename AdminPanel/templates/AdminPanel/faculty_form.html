@@ -1,0 +1,171 @@
+{% extends 'AdminPanel/base.html' %}
+
+{% block title %}Create Faculty - QR Attendance System{% endblock %}
+
+{% block content_title %}Create Faculty Account{% endblock %}
+
+{% block content_actions %}
+<a href="{% url 'admin_faculty_list' %}" class="btn btn-secondary">
+    <i class="fas fa-users"></i> Faculty List
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title">Faculty Information</h5>
+    </div>
+    <div class="card-body">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="first_name">First Name <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" required>
+                </div>
+                
+                <div class="form-group col-md-6">
+                    <label for="last_name">Last Name <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="username">Username <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                    <small class="form-text text-muted">Username will be used for login</small>
+                </div>
+                
+                <div class="form-group col-md-6">
+                    <label for="email">Email <span class="required">*</span></label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="password">Password <span class="required">*</span></label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                
+                <div class="form-group col-md-6">
+                    <label for="confirm_password">Confirm Password <span class="required">*</span></label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="department">Department</label>
+                    <input type="text" class="form-control" id="department" name="department">
+                </div>
+                
+                <div class="form-group col-md-6">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" class="form-control" id="phone" name="phone">
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Create Faculty Account
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -10px;
+        margin-left: -10px;
+        margin-bottom: 15px;
+    }
+    
+    .col-md-4 {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+    
+    .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    .form-actions {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .required {
+        color: red;
+    }
+    
+    .messages {
+        margin-bottom: 1rem;
+    }
+    
+    .message {
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+    
+    .message.error {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+    
+    .message.success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+    
+    .message.warning {
+        color: #856404;
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+    }
+</style>
+{% endblock %} 

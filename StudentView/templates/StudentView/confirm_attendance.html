@@ -1,0 +1,260 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirm Attendance - SmartCampus Attendance Portal</title>
+    <link rel="stylesheet" href="{% static 'StudentView/submitted.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      .attendance-form-container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 600px;
+      }
+      
+      .form-title {
+        color: #3e4eb8;
+        margin-bottom: 20px;
+        font-size: 24px;
+        text-align: center;
+      }
+      
+      .course-info {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      
+      .course-name {
+        font-weight: 600;
+        color: #3e4eb8;
+        font-size: 18px;
+      }
+      
+      .course-details {
+        color: #6c757d;
+        font-size: 14px;
+        margin-top: 5px;
+      }
+      
+      .student-card {
+        background-color: #fff;
+        border: 1px solid #e9ecef;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+      
+      .student-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      
+      .student-avatar {
+        background-color: #3e4eb8;
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-size: 20px;
+      }
+      
+      .student-info h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #212529;
+      }
+      
+      .student-info p {
+        margin: 5px 0 0;
+        color: #6c757d;
+        font-size: 14px;
+      }
+      
+      .student-details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+      }
+      
+      .detail-item {
+        display: flex;
+        flex-direction: column;
+        padding: 8px;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+      }
+      
+      .detail-label {
+        font-size: 12px;
+        color: #6c757d;
+        margin-bottom: 4px;
+      }
+      
+      .detail-value {
+        font-size: 14px;
+        color: #212529;
+        font-weight: 500;
+      }
+      
+      .verification-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 12px;
+        border-radius: 8px;
+        margin: 20px 0;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      
+      .verification-note i {
+        font-size: 16px;
+        margin-top: 2px;
+      }
+      
+      .submit-button {
+        background-color: #3e4eb8;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        width: 100%;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+      }
+      
+      .submit-button:hover {
+        background-color: #333fa3;
+        transform: translateY(-2px);
+      }
+      
+      .submit-button i {
+        font-size: 18px;
+      }
+      
+      .alternative-links {
+        margin-top: 20px;
+        text-align: center;
+      }
+      
+      .alternative-links a {
+        color: #3e4eb8;
+        text-decoration: none;
+        margin: 0 10px;
+        font-weight: 500;
+      }
+      
+      .alternative-links a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <h1 class="header-title">SmartCampus</h1>
+      <h2>Attendance Portal</h2>
+    </header>
+
+    <div class="container">
+      <div class="attendance-form-container">
+        <h2 class="form-title">Confirm Your Attendance</h2>
+        
+        <div class="course-info">
+          <div class="course-name">{{ subject.code }} - {{ subject.name }}</div>
+          <div class="course-details">
+            Branch: {{ subject.branch }} | Year: {{ subject.year }}
+            {% if subject.section %}
+            | Section: {{ subject.section }}
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="student-card">
+          <div class="student-header">
+            <div class="student-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="student-info">
+              <h3>{{ student.s_fname }} {{ student.s_lname }}</h3>
+              <p>{{ student.s_roll }}</p>
+            </div>
+          </div>
+          
+          <div class="student-details">
+            <div class="detail-item">
+              <span class="detail-label">Branch</span>
+              <span class="detail-value">{{ student.s_branch }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Year</span>
+              <span class="detail-value">{{ student.s_year }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Section</span>
+              <span class="detail-value">{{ student.s_section }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Current Date</span>
+              <span class="detail-value">{{ today|date:"F j, Y" }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="verification-note">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div>
+            Verify your information is correct before confirming. Attendance is tracked by your device IP address to prevent proxy attendance.
+          </div>
+        </div>
+        
+        <form method="POST" action="{% url 'add_manually_post' %}">
+          {% csrf_token %}
+          <input type="hidden" name="subject" value="{{ subject.id }}">
+          <input type="hidden" name="student-name" value="{{ student.s_roll }}">
+          
+          <button type="submit" class="submit-button">
+            <i class="fas fa-check-circle"></i> Confirm Attendance
+          </button>
+        </form>
+        
+        <div class="alternative-links">
+          <a href="{% url 'student_attendance' %}?subject={{ subject.id }}">
+            <i class="fas fa-arrow-left"></i> Go Back
+          </a>
+          <a href="{% url 'student_enrollment' %}">
+            <i class="fas fa-home"></i> Student Portal
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>&copy; SmartCampus Attendance System {% now "Y" %}</p>
+    </footer>
+  </body>
+</html> 

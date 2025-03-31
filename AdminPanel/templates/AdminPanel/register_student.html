@@ -1,0 +1,174 @@
+{% extends 'AdminPanel/base.html' %}
+
+{% block title %}Register Student - QR Attendance System{% endblock %}
+
+{% block content_title %}Register Student{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title">New Student Registration</h5>
+    </div>
+    <div class="card-body">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <form method="POST" class="student-form">
+            {% csrf_token %}
+            
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="roll_number">Roll Number <span class="required">*</span></label>
+                    <input type="text" id="roll_number" name="roll_number" class="form-control" required>
+                </div>
+                
+                <div class="form-group col-md-6">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="first_name">First Name <span class="required">*</span></label>
+                    <input type="text" id="first_name" name="first_name" class="form-control" required>
+                </div>
+                
+                <div class="form-group col-md-6">
+                    <label for="last_name">Last Name <span class="required">*</span></label>
+                    <input type="text" id="last_name" name="last_name" class="form-control" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="branch">Branch <span class="required">*</span></label>
+                    <select id="branch" name="branch" class="form-control" required>
+                        <option value="">-- Select Branch --</option>
+                        {% for branch in branches %}
+                        <option value="{{ branch.id }}">{{ branch.branch }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group col-md-4">
+                    <label for="year">Year <span class="required">*</span></label>
+                    <select id="year" name="year" class="form-control" required>
+                        <option value="">-- Select Year --</option>
+                        {% for year in years %}
+                        <option value="{{ year.id }}">{{ year.year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group col-md-4">
+                    <label for="section">Section <span class="required">*</span></label>
+                    <select id="section" name="section" class="form-control" required>
+                        <option value="">-- Select Section --</option>
+                        {% for section in sections %}
+                        <option value="{{ section.id }}">{{ section.section }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-user-plus"></i> Register Student
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -10px;
+        margin-left: -10px;
+        margin-bottom: 15px;
+    }
+    
+    .col-md-4 {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+    
+    .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    .form-actions {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .required {
+        color: red;
+    }
+    
+    .messages {
+        margin-bottom: 1rem;
+    }
+    
+    .message {
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+    
+    .message.error {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+    
+    .message.success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+    
+    .message.warning {
+        color: #856404;
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+    }
+</style>
+{% endblock %} 

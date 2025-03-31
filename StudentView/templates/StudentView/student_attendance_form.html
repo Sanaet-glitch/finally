@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mark Attendance - SmartCampus Attendance Portal</title>
+    <link rel="stylesheet" href="{% static 'StudentView/submitted.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      .attendance-form-container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 600px;
+      }
+      
+      .form-title {
+        color: #3e4eb8;
+        margin-bottom: 20px;
+        font-size: 24px;
+        text-align: center;
+      }
+      
+      .course-info {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      
+      .course-name {
+        font-weight: 600;
+        color: #3e4eb8;
+        font-size: 18px;
+      }
+      
+      .course-details {
+        color: #6c757d;
+        font-size: 14px;
+        margin-top: 5px;
+      }
+      
+      .form-info {
+        background-color: #cff4fc;
+        color: #055160;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      
+      .form-info i {
+        margin-top: 2px;
+        font-size: 16px;
+      }
+      
+      .form-group {
+        margin-bottom: 20px;
+      }
+      
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #212529;
+      }
+      
+      .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        font-size: 16px;
+      }
+      
+      .form-group input:focus {
+        border-color: #3e4eb8;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(62, 78, 184, 0.25);
+      }
+      
+      .submit-button {
+        background-color: #3e4eb8;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        width: 100%;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+      }
+      
+      .submit-button:hover {
+        background-color: #333fa3;
+        transform: translateY(-2px);
+      }
+      
+      .submit-button i {
+        font-size: 18px;
+      }
+      
+      .messages {
+        margin-bottom: 20px;
+      }
+      
+      .message {
+        padding: 12px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+      
+      .message.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      
+      .message.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      
+      .message.info, .message.warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+      }
+      
+      .alternative-links {
+        margin-top: 20px;
+        text-align: center;
+      }
+      
+      .alternative-links a {
+        color: #3e4eb8;
+        text-decoration: none;
+        margin: 0 10px;
+        font-weight: 500;
+      }
+      
+      .alternative-links a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <h1 class="header-title">SmartCampus</h1>
+      <h2>Attendance Portal</h2>
+    </header>
+
+    <div class="container">
+      <div class="attendance-form-container">
+        <h2 class="form-title">Mark Attendance</h2>
+        
+        <div class="course-info">
+          <div class="course-name">{{ subject.code }} - {{ subject.name }}</div>
+          <div class="course-details">
+            Branch: {{ subject.branch }} | Year: {{ subject.year }}
+            {% if subject.section %}
+            | Section: {{ subject.section }}
+            {% endif %}
+          </div>
+        </div>
+        
+        {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+            <div class="message {{ message.tags }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="form-info">
+          <i class="fas fa-info-circle"></i>
+          <div>
+            Enter your roll number to mark your attendance for this class.
+            You need to be enrolled in this course to mark attendance.
+          </div>
+        </div>
+        
+        <form method="POST" action="{% url 'verify_student' %}">
+          {% csrf_token %}
+          <input type="hidden" name="subject" value="{{ subject.id }}">
+          
+          <div class="form-group">
+            <label for="roll_number">Your Roll Number:</label>
+            <input type="text" id="roll_number" name="roll_number" required autofocus 
+                   placeholder="e.g., CS001">
+          </div>
+          
+          <button type="submit" class="submit-button">
+            <i class="fas fa-arrow-right"></i> Continue
+          </button>
+        </form>
+        
+        <div class="alternative-links">
+          <a href="{% url 'student_enrollment' %}">
+            <i class="fas fa-arrow-left"></i> Back to Student Portal
+          </a>
+          <a href="{% url 'view_student_enrollments' %}">
+            <i class="fas fa-users"></i> View My Courses
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>&copy; SmartCampus Attendance System {% now "Y" %}</p>
+    </footer>
+  </body>
+</html> 

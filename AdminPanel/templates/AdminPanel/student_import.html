@@ -1,0 +1,273 @@
+{% extends 'AdminPanel/base.html' %}
+
+{% block title %}Import Students - SmartCampus Attendance System{% endblock %}
+
+{% block content_title %}Batch Import Students{% endblock %}
+
+{% block content_actions %}
+<a href="{% url 'admin_student_list' %}" class="btn btn-secondary">
+    <i class="fas fa-arrow-left"></i> Back to List
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title">CSV Import Instructions</h5>
+    </div>
+    <div class="card-body">
+        <p>Upload a CSV file with the following columns:</p>
+        <ul>
+            <li><strong>roll_number</strong> - Unique student roll number/ID</li>
+            <li><strong>first_name</strong> - Student's first name</li>
+            <li><strong>last_name</strong> - Student's last name</li>
+            <li><strong>branch</strong> - Branch name (e.g., CS, IT)</li>
+            <li><strong>year</strong> - Year of study (1-4)</li>
+            <li><strong>section</strong> - Section name (e.g., A, B)</li>
+        </ul>
+        
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> The first row of your CSV must contain these column headers.
+        </div>
+        
+        <div class="csv-example">
+            <h6>Example CSV Format:</h6>
+            <pre>roll_number,first_name,last_name,branch,year,section
+CS001,John,Doe,CS,1,A
+CS002,Jane,Smith,CS,1,A
+IT001,Bob,Johnson,IT,2,B</pre>
+        </div>
+        
+        <a href="{% url 'admin_download_csv_template' %}" class="btn btn-sm btn-info">
+            <i class="fas fa-download"></i> Download Template
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title">Upload CSV File</h5>
+    </div>
+    <div class="card-body">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if success_count is not None %}
+        <div class="import-results">
+            <h3>Import Results</h3>
+            <div class="result-stats">
+                <div class="stat-item success">
+                    <span class="stat-value">{{ success_count }}</span>
+                    <span class="stat-label">Students imported successfully</span>
+                </div>
+                <div class="stat-item error">
+                    <span class="stat-value">{{ error_count }}</span>
+                    <span class="stat-label">Failed imports</span>
+                </div>
+            </div>
+            
+            {% if error_count > 0 %}
+            <div class="error-details">
+                <h4>Error Details:</h4>
+                <ul class="error-list">
+                    {% for error in error_messages %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% if has_more_errors %}
+                <p class="more-errors">... and {{ total_error_count|add:"-10" }} more errors.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <div class="action-buttons">
+                <a href="{% url 'admin_student_list' %}" class="btn btn-primary">
+                    <i class="fas fa-list"></i> View Student List
+                </a>
+                <a href="{% url 'admin_student_import' %}" class="btn btn-secondary">
+                    <i class="fas fa-upload"></i> Import Another File
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <form method="POST" enctype="multipart/form-data" class="import-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="csv_file">Select CSV File <span class="required">*</span></label>
+                <input type="file" id="csv_file" name="csv_file" class="form-control-file" required accept=".csv">
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> Import Students
+                </button>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .csv-example {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .csv-example pre {
+        margin-bottom: 0;
+        white-space: pre-wrap;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-control-file {
+        display: block;
+        width: 100%;
+    }
+    
+    .form-actions {
+        margin-top: 2rem;
+    }
+    
+    .required {
+        color: red;
+    }
+    
+    .alert {
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+    
+    .alert-info {
+        color: #0c5460;
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+    }
+    
+    .messages {
+        margin-bottom: 1rem;
+    }
+    
+    .message {
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+    
+    .message.error {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+    
+    .message.success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+    
+    .message.warning {
+        color: #856404;
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+    }
+    
+    .import-results {
+        padding: 1rem;
+    }
+    
+    .result-stats {
+        display: flex;
+        margin: 1.5rem 0;
+    }
+    
+    .stat-item {
+        flex: 1;
+        padding: 1rem;
+        text-align: center;
+        border-radius: 0.25rem;
+        margin-right: 1rem;
+    }
+    
+    .stat-item:last-child {
+        margin-right: 0;
+    }
+    
+    .stat-item.success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .stat-item.error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    
+    .stat-value {
+        display: block;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    
+    .stat-label {
+        display: block;
+        margin-top: 0.5rem;
+    }
+    
+    .error-details {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+    }
+    
+    .error-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    
+    .error-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .error-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .more-errors {
+        font-style: italic;
+        color: #6c757d;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .mb-4 {
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %} 

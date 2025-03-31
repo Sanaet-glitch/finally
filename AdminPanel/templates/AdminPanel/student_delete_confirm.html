@@ -1,0 +1,57 @@
+{% extends 'AdminPanel/base.html' %}
+
+{% block content_title %}Confirm Student Deletion{% endblock %}
+
+{% block content_actions %}
+<a href="{% url 'admin_student_list' %}" class="btn btn-primary">
+    <i class="fas fa-arrow-left"></i> Back to Student List
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Confirm Deletion of Student: {{ student.s_fname }} {{ student.s_lname }}</h2>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i> 
+            <strong>Warning:</strong> Student {{ student.s_fname }} {{ student.s_lname }} ({{ student.s_roll }}) has {{ attendance_count }} attendance records.
+            Deleting this student will permanently remove all attendance history and course enrollments.
+        </div>
+        
+        <form method="post" action="{% url 'admin_student_delete' roll_number=student.s_roll %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="force_delete" name="force_delete" value="yes">
+                    <label class="custom-control-label" for="force_delete">
+                        I understand that this action cannot be undone and all related data will be permanently deleted.
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-danger" id="delete-btn" disabled>
+                    <i class="fas fa-trash"></i> Permanently Delete Student
+                </button>
+                <a href="{% url 'admin_student_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkbox = document.getElementById('force_delete');
+        const deleteBtn = document.getElementById('delete-btn');
+        
+        checkbox.addEventListener('change', function() {
+            deleteBtn.disabled = !this.checked;
+        });
+    });
+</script>
+{% endblock %} 

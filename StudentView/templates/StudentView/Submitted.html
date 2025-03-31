@@ -4,23 +4,100 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Attendance Submitted - College Attendance Portal</title>
+    <title>Attendance Submitted - SmartCampus Attendance Portal</title>
     <link rel="stylesheet" href="{% static 'StudentView/submitted.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      .success-container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+      }
+      
+      .success-icon {
+        color: #28a745;
+        font-size: 48px;
+        margin-bottom: 20px;
+      }
+      
+      .success-title {
+        color: #3e4eb8;
+        margin-bottom: 10px;
+        font-size: 24px;
+      }
+      
+      .success-message {
+        color: #6c757d;
+        margin-bottom: 30px;
+      }
+      
+      .navigation-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      
+      .nav-button {
+        background-color: #3e4eb8;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+      }
+      
+      .nav-button:hover {
+        background-color: #333fa3;
+        transform: translateY(-2px);
+      }
+    </style>
   </head>
   <body>
     <header class="header">
-      <h1 class="header-title">Inderprastha Engineering College</h1>
+      <h1 class="header-title">SmartCampus</h1>
       <h2>Attendance Portal</h2>
     </header>
 
     <div class="container">
-      <h2>Attendance submitted successfully.</h2>
-      <br />
-      <h2>You may close this page.</h2>
+      <div class="success-container">
+        <i class="fas fa-check-circle success-icon"></i>
+        <h2 class="success-title">Attendance Submitted Successfully</h2>
+        {% if show_details %}
+        <p class="success-message">
+          Attendance for <strong>{{ student_name }}</strong> has been recorded for <strong>{{ subject_name }}</strong>. Thank you!
+        </p>
+        {% else %}
+        <p class="success-message">Your attendance has been recorded. Thank you!</p>
+        {% endif %}
+        
+        <div class="navigation-buttons">
+          <a href="{% url 'student_enrollment' %}" class="nav-button">
+            <i class="fas fa-home"></i> Student Portal
+          </a>
+          <a href="{% url 'view_student_enrollments' %}" class="nav-button">
+            <i class="fas fa-book"></i> View My Courses
+          </a>
+        </div>
+      </div>
     </div>
 
     <footer class="footer">
-      <p>&copy; QR Attendance System 2023 - Team Hokage</p>
+      <p>&copy; SmartCampus Attendance System {% now "Y" %}</p>
     </footer>
   </body>
 </html>

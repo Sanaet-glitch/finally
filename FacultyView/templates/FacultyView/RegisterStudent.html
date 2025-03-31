@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin: Register Student - SmartCampus Attendance System</title>
+    <link rel="stylesheet" href="{% static 'FacultyView/Index_Style.css' %}" />
+    <link rel="stylesheet" href="{% static 'FacultyView/register.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <div class="header-title">
+          <h1>SmartCampus</h1>
+          <h2>Attendance Portal</h2>
+        </div>
+        <div class="user-controls">
+          <span class="username">Welcome, {{ user.username }}</span>
+          <form method="POST" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="logout-button">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </form>
+        </div>
+      </div>
+    </header>
+    
+    <main class="register-main">
+      <div class="container">
+        <div class="content-box">
+          <div class="box-header">
+            <h2><i class="fas fa-user-plus"></i> Admin: Register New Student</h2>
+            {% if user.profile.role == 'ADMIN' %}
+            <a href="{% url 'admin_dashboard' %}" class="back-link">
+              <i class="fas fa-arrow-left"></i> Back to Admin Dashboard
+            </a>
+            {% else %}
+            <a href="{% url 'faculty_view' %}" class="back-link">
+              <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            {% endif %}
+          </div>
+          
+          {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="message {{ message.tags }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+          
+          {% if registration_success %}
+            <div class="success-info">
+              <h3>Student Registered Successfully!</h3>
+              <div class="student-details">
+                <p><strong>Roll Number:</strong> {{ student.s_roll }}</p>
+                <p><strong>Name:</strong> {{ student.s_fname }} {{ student.s_lname }}</p>
+                <p><strong>Branch:</strong> {{ student.s_branch }}</p>
+                <p><strong>Year:</strong> {{ student.s_year }}</p>
+                <p><strong>Section:</strong> {{ student.s_section }}</p>
+              </div>
+              
+              <div class="eligible-subjects">
+                <h3>Eligible for these subjects:</h3>
+                {% if eligible_subjects %}
+                  <ul>
+                    {% for subject in eligible_subjects %}
+                      <li>{{ subject.code }} - {{ subject.name }}</li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p>No eligible subjects found for this branch/year/section combination.</p>
+                {% endif %}
+              </div>
+              
+              <div class="action-buttons">
+                <a href="{% url 'register_student' %}" class="register-another">
+                  <i class="fas fa-plus"></i> Register Another Student
+                </a>
+                {% if user.profile.role == 'ADMIN' %}
+                <a href="{% url 'admin_dashboard' %}" class="return-dashboard">
+                  <i class="fas fa-home"></i> Return to Admin Dashboard
+                </a>
+                {% else %}
+                <a href="{% url 'faculty_view' %}" class="return-dashboard">
+                  <i class="fas fa-home"></i> Return to Dashboard
+                </a>
+                {% endif %}
+              </div>
+            </div>
+          {% else %}
+            <form method="POST" action="{% url 'register_student' %}" class="registration-form">
+              {% csrf_token %}
+              
+              <div class="form-group">
+                <label for="roll_number">Roll Number: <span class="required">*</span></label>
+                <input type="text" id="roll_number" name="roll_number" required placeholder="e.g., CS001">
+              </div>
+              
+              <div class="form-group">
+                <label for="first_name">First Name: <span class="required">*</span></label>
+                <input type="text" id="first_name" name="first_name" required placeholder="e.g., John">
+              </div>
+              
+              <div class="form-group">
+                <label for="last_name">Last Name: <span class="required">*</span></label>
+                <input type="text" id="last_name" name="last_name" required placeholder="e.g., Smith">
+              </div>
+              
+              <div class="form-group">
+                <label for="branch">Branch: <span class="required">*</span></label>
+                <select id="branch" name="branch" required>
+                  <option value="">-- Select Branch --</option>
+                  {% for branch in branches %}
+                    <option value="{{ branch.id }}">{{ branch.branch }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="year">Year: <span class="required">*</span></label>
+                <select id="year" name="year" required>
+                  <option value="">-- Select Year --</option>
+                  {% for year in years %}
+                    <option value="{{ year.id }}">{{ year.year }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="section">Section: <span class="required">*</span></label>
+                <select id="section" name="section" required>
+                  <option value="">-- Select Section --</option>
+                  {% for section in sections %}
+                    <option value="{{ section.id }}">{{ section.section }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              
+              <div class="form-note">
+                <p><i class="fas fa-info-circle"></i> Students registered here will automatically be eligible for courses matching their branch, year, and section. Faculty can then take attendance for these students in their courses.</p>
+              </div>
+              
+              <div class="form-actions">
+                <button type="submit" class="register-button">
+                  <i class="fas fa-user-plus"></i> Register Student
+                </button>
+                {% if user.profile.role == 'ADMIN' %}
+                <a href="{% url 'admin_dashboard' %}" class="cancel-button">
+                  <i class="fas fa-times"></i> Cancel
+                </a>
+                {% else %}
+                <a href="{% url 'faculty_view' %}" class="cancel-button">
+                  <i class="fas fa-times"></i> Cancel
+                </a>
+                {% endif %}
+              </div>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>&copy; SmartCampus Attendance System {% now "Y" %}</p>
+    </footer>
+  </body>
+</html> 

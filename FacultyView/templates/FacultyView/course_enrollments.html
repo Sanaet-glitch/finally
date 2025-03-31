@@ -1,0 +1,194 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Course Enrollments - SmartCampus Attendance System</title>
+    <link rel="stylesheet" href="{% static 'FacultyView/Index_Style.css' %}" />
+    <link rel="stylesheet" href="{% static 'FacultyView/register.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      .students-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      
+      .students-table th,
+      .students-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #e9ecef;
+      }
+      
+      .students-table th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+      }
+      
+      .students-table tr:hover {
+        background-color: #f8f9fa;
+      }
+      
+      .student-details {
+        display: flex;
+        align-items: center;
+      }
+      
+      .student-icon {
+        background-color: #e9ecef;
+        color: #3e4eb8;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+      }
+      
+      .empty-list {
+        padding: 40px 20px;
+        text-align: center;
+        color: #6c757d;
+      }
+      
+      .course-info {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      
+      .course-info h3 {
+        margin-top: 0;
+        color: #3e4eb8;
+      }
+      
+      .course-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 10px;
+      }
+      
+      .course-detail-item {
+        background-color: #fff;
+        padding: 8px 15px;
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      }
+      
+      .enrollment-date {
+        color: #6c757d;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <div class="header-title">
+          <h1>SmartCampus</h1>
+          <h2>Attendance Portal</h2>
+        </div>
+        <div class="user-controls">
+          <span class="username">Welcome, {{ user.username }}</span>
+          <form method="POST" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="logout-button">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </form>
+        </div>
+      </div>
+    </header>
+    
+    <main class="register-main">
+      <div class="container">
+        <div class="content-box">
+          <div class="box-header">
+            <h2><i class="fas fa-users"></i> Enrolled Students</h2>
+            <a href="{% url 'manage_courses' %}" class="back-link">
+              <i class="fas fa-arrow-left"></i> Back to Courses
+            </a>
+          </div>
+          
+          <div class="course-info">
+            <h3>{{ subject.code }} - {{ subject.name }}</h3>
+            <div class="course-details">
+              <div class="course-detail-item">
+                <strong>Branch:</strong> {{ subject.branch }}
+              </div>
+              <div class="course-detail-item">
+                <strong>Year:</strong> {{ subject.year }}
+              </div>
+              {% if subject.section %}
+              <div class="course-detail-item">
+                <strong>Section:</strong> {{ subject.section }}
+              </div>
+              {% endif %}
+              <div class="course-detail-item">
+                <strong>Enrollment Key:</strong> 
+                {% if subject.enrollment_key %}
+                  {{ subject.enrollment_key }}
+                {% else %}
+                  <em>Not set</em>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          
+          {% if enrollments %}
+            <table class="students-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Roll Number</th>
+                  <th>Branch</th>
+                  <th>Year</th>
+                  <th>Section</th>
+                  <th>Enrolled On</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for enrollment in enrollments %}
+                <tr>
+                  <td>
+                    <div class="student-details">
+                      <div class="student-icon">
+                        <i class="fas fa-user"></i>
+                      </div>
+                      {{ enrollment.student.s_fname }} {{ enrollment.student.s_lname }}
+                    </div>
+                  </td>
+                  <td>{{ enrollment.student.s_roll }}</td>
+                  <td>{{ enrollment.student.s_branch }}</td>
+                  <td>{{ enrollment.student.s_year }}</td>
+                  <td>{{ enrollment.student.s_section }}</td>
+                  <td class="enrollment-date">{{ enrollment.enrolled_date|date:"F j, Y" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="empty-list">
+              <i class="fas fa-info-circle fa-2x"></i>
+              <p>No students enrolled in this course yet.</p>
+              <p>Share the enrollment key with students to allow them to enroll.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>&copy; SmartCampus Attendance System {% now "Y" %}</p>
+    </footer>
+  </body>
+</html> 

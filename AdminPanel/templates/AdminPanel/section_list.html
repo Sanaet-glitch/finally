@@ -1,0 +1,53 @@
+{% extends 'AdminPanel/base.html' %}
+
+{% block content_title %}Manage Sections{% endblock %}
+
+{% block content_actions %}
+<a href="{% url 'admin_section_create' %}" class="btn btn-primary">
+    <i class="fas fa-plus"></i> Create New Section
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">All Sections</h2>
+    </div>
+    <div class="card-body">
+        {% if sections %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Section Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for section in sections %}
+                    <tr>
+                        <td>{{ section.id }}</td>
+                        <td>{{ section.section }}</td>
+                        <td>
+                            <a href="{% url 'admin_section_edit' section_id=section.id %}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <form action="{% url 'admin_section_delete' section_id=section.id %}" method="post" style="display: inline-block;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this section?');">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-center">No sections found. <a href="{% url 'admin_section_create' %}">Create a new section</a>.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

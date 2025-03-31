@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Error - SmartCampus Attendance Portal</title>
+    <link rel="stylesheet" href="{% static 'StudentView/submitted.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      .error-container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+      }
+      
+      .error-icon {
+        color: #dc3545;
+        font-size: 64px;
+        margin-bottom: 20px;
+      }
+      
+      .error-title {
+        color: #dc3545;
+        margin-bottom: 20px;
+      }
+      
+      .error-message {
+        color: #212529;
+        margin-bottom: 30px;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      
+      .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+      }
+      
+      .action-button {
+        padding: 12px 25px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .primary-button {
+        background-color: #3e4eb8;
+        color: white;
+      }
+      
+      .secondary-button {
+        background-color: #f8f9fa;
+        color: #495057;
+        border: 1px solid #ced4da;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <h1 class="header-title">SmartCampus</h1>
+      <h2>Attendance Portal</h2>
+    </header>
+
+    <div class="container">
+      <div class="error-container">
+        <i class="fas fa-exclamation-circle error-icon"></i>
+        <h2 class="error-title">Unable to Mark Attendance</h2>
+        
+        <div class="error-message">
+          {{ error_message }}
+        </div>
+        
+        <div class="action-buttons">
+          {% if "not enrolled" in error_message %}
+            <a href="{% url 'student_enrollment' %}" class="action-button primary-button">
+              <i class="fas fa-user-plus"></i> Enroll in Course
+            </a>
+            <a href="{% url 'view_student_enrollments' %}" class="action-button secondary-button">
+              <i class="fas fa-list"></i> View My Courses
+            </a>
+          {% else %}
+            <a href="{% url 'student_enrollment' %}" class="action-button primary-button">
+              <i class="fas fa-home"></i> Student Portal
+            </a>
+            {% if subject_id %}
+            <a href="{% url 'student_attendance' %}?subject={{ subject_id }}" class="action-button secondary-button">
+              <i class="fas fa-redo"></i> Try Again
+            </a>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>&copy; SmartCampus Attendance System {% now "Y" %}</p>
+    </footer>
+  </body>
+</html> 

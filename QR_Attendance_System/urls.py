@@ -16,9 +16,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
+from FacultyView import views as faculty_views
+from AdminPanel import views as admin_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("FacultyView.urls")),
     path("", include("StudentView.urls")),
+    path("admin-panel/", include("AdminPanel.urls")),
+    path("login-redirect/", admin_views.login_redirect, name="login_redirect"),
+    
+    # Authentication URLs
+    path("accounts/login/", auth_views.LoginView.as_view(
+        template_name="FacultyView/login.html",
+        redirect_field_name='next',
+        next_page='/login-redirect/'
+    ), name="login"),
+    path("accounts/logout/", admin_views.custom_logout, name="logout"),
 ]

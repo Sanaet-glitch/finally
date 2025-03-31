@@ -1,0 +1,81 @@
+{% extends 'AdminPanel/base.html' %}
+
+{% block content_title %}Edit Faculty Member{% endblock %}
+
+{% block content_actions %}
+<a href="{% url 'admin_faculty_list' %}" class="btn btn-primary">
+    <i class="fas fa-arrow-left"></i> Back to Faculty List
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Edit Faculty Member: {{ faculty.username }}</h2>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="first_name">First Name <span style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" value="{{ faculty.first_name }}" required>
+                </div>
+                
+                <div class="form-group col-md-6">
+                    <label for="last_name">Last Name <span style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" value="{{ faculty.last_name }}" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email <span style="color: red;">*</span></label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ faculty.email }}" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="department">Department</label>
+                    <input type="text" class="form-control" id="department" name="department" value="{{ profile.department|default:'' }}">
+                </div>
+                
+                <div class="form-group col-md-6">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" class="form-control" id="phone" name="phone" value="{{ profile.phone|default:'' }}">
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title h5">Change Password (optional)</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Leave these fields empty if you don't want to change the password.</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="new_password">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password">
+                        </div>
+                        
+                        <div class="form-group col-md-6">
+                            <label for="confirm_password">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Update Faculty Member
+                </button>
+                <a href="{% url 'admin_faculty_list' %}" class="btn btn-danger">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

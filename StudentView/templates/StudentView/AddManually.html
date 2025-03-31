@@ -1,0 +1,323 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mark Attendance - SmartCampus Attendance Portal</title>
+    <link rel="stylesheet" href="{% static 'StudentView/submitted.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      .attendance-form-container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 600px;
+      }
+      
+      .form-title {
+        color: #3e4eb8;
+        margin-bottom: 20px;
+        font-size: 24px;
+        text-align: center;
+      }
+      
+      .course-info {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      
+      .course-name {
+        font-weight: 600;
+        color: #3e4eb8;
+        font-size: 18px;
+      }
+      
+      .course-details {
+        color: #6c757d;
+        font-size: 14px;
+        margin-top: 5px;
+      }
+      
+      .student-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+      }
+      
+      .student {
+        padding: 0;
+        border-bottom: 1px solid #dee2e6;
+      }
+      
+      .student:last-child {
+        border-bottom: none;
+      }
+      
+      .student-label {
+        display: flex;
+        padding: 15px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        position: relative;
+      }
+      
+      .student-label:hover {
+        background-color: #f8f9fa;
+      }
+      
+      .student-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .student-name {
+        font-weight: 500;
+        color: #212529;
+      }
+      
+      .student-info {
+        color: #6c757d;
+        font-size: 14px;
+        margin-top: 3px;
+      }
+      
+      .student-checkbox {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+      }
+      
+      .checkmark {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        height: 25px;
+        width: 25px;
+        background-color: #eee;
+        border-radius: 50%;
+      }
+      
+      .student-label:hover .checkmark {
+        background-color: #ccc;
+      }
+      
+      .student-checkbox:checked ~ .checkmark {
+        background-color: #3e4eb8;
+      }
+      
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+      
+      .student-checkbox:checked ~ .checkmark:after {
+        display: block;
+      }
+      
+      .student-label .checkmark:after {
+        left: 9px;
+        top: 5px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        transform: rotate(45deg);
+      }
+      
+      .submit-button {
+        background-color: #3e4eb8;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        width: 100%;
+        font-size: 16px;
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+      }
+      
+      .submit-button:hover {
+        background-color: #333fa3;
+        transform: translateY(-2px);
+      }
+      
+      .submit-button i {
+        font-size: 18px;
+      }
+      
+      .no-students {
+        padding: 30px;
+        text-align: center;
+        color: #6c757d;
+      }
+      
+      .alternative-links {
+        margin-top: 20px;
+        text-align: center;
+      }
+      
+      .alternative-links a {
+        color: #3e4eb8;
+        text-decoration: none;
+        margin: 0 10px;
+        font-weight: 500;
+      }
+      
+      .alternative-links a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <h1 class="header-title">SmartCampus</h1>
+      <h2>Attendance Portal</h2>
+    </header>
+
+    <div class="container">
+      <div class="attendance-form-container">
+        <h2 class="form-title">Mark Attendance</h2>
+        
+        <div class="course-info">
+          <div class="course-name">{{ subject.code }} - {{ subject.name }}</div>
+          <div class="course-details">
+            Branch: {{ subject.branch }} | Year: {{ subject.year }}
+            {% if subject.section %}
+            | Section: {{ subject.section }}
+            {% endif %}
+          </div>
+        </div>
+        
+        <form method="POST" action="{% url 'add_manually_post' %}">
+          {% csrf_token %}
+          <input type="hidden" name="subject" value="{{ subject.id }}">
+          {% if source == 'faculty' %}
+          <input type="hidden" name="source" value="faculty">
+          {% endif %}
+          
+          {% if students %}
+            <div class="form-info">
+              <i class="fas fa-info-circle"></i> Select a student to mark attendance
+            </div>
+            
+            <ul class="student-list">
+              {% for student in students %}
+              <li class="student">
+                <label class="student-label">
+                  <div class="student-details">
+                    <span class="student-name">{{ student.s_fname }} {{ student.s_lname }}</span>
+                    <span class="student-info">{{ student.s_roll }} | {{ student.s_branch }}-{{ student.s_year }}</span>
+                  </div>
+                  <input type="radio" class="student-checkbox" name="student-name" value="{{ student.s_roll }}">
+                  <span class="checkmark"></span>
+                </label>
+              </li>
+              {% endfor %}
+            </ul>
+            
+            <button type="submit" class="submit-button">
+              <i class="fas fa-check-circle"></i> Mark Attendance
+            </button>
+          {% else %}
+            <div class="no-students">
+              <i class="fas fa-exclamation-circle fa-2x"></i>
+              <p>No students are enrolled in this course yet.</p>
+              <p>Students must enroll in the course before they can mark attendance.</p>
+            </div>
+          {% endif %}
+        </form>
+        
+        <div class="alternative-links">
+          {% if source == 'faculty' %}
+            <a href="{% url 'faculty_view' %}{% if subject %}?subject={{ subject.id }}{% endif %}">
+              <i class="fas fa-arrow-left"></i> Back to Faculty Dashboard
+            </a>
+            {% if students %}
+            <a href="{% url 'course_enrollments' subject.id %}">
+              <i class="fas fa-users"></i> View All Enrolled Students
+            </a>
+            {% endif %}
+          {% else %}
+            <a href="{% url 'student_enrollment' %}">
+              <i class="fas fa-arrow-left"></i> Back to Student Portal
+            </a>
+            {% if students %}
+            <a href="{% url 'view_student_enrollments' %}">
+              <i class="fas fa-users"></i> View My Courses
+            </a>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>&copy; SmartCampus Attendance System {% now "Y" %}</p>
+    </footer>
+
+    <script>
+      // Add validation for the form to ensure a student is selected
+      document.addEventListener('DOMContentLoaded', function() {
+        const attendanceForm = document.querySelector('form');
+        const submitButton = document.querySelector('.submit-button');
+        const radioButtons = document.querySelectorAll('.student-checkbox');
+        
+        if (attendanceForm) {
+          attendanceForm.addEventListener('submit', function(e) {
+            // Check if any radio button is selected
+            let isAnySelected = false;
+            radioButtons.forEach(function(radio) {
+              if (radio.checked) {
+                isAnySelected = true;
+              }
+            });
+            
+            if (!isAnySelected) {
+              e.preventDefault();
+              alert('Please select a student to mark attendance');
+            }
+          });
+        }
+        
+        // Make sure clicking anywhere in the student label selects the radio button
+        const studentLabels = document.querySelectorAll('.student-label');
+        studentLabels.forEach(function(label) {
+          label.addEventListener('click', function() {
+            const radio = this.querySelector('.student-checkbox');
+            radio.checked = true;
+            
+            // Uncheck all other radio buttons
+            radioButtons.forEach(function(otherRadio) {
+              if (otherRadio !== radio) {
+                otherRadio.checked = false;
+              }
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html> 

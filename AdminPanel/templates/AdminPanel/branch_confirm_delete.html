@@ -1,0 +1,35 @@
+{% extends 'AdminPanel/base.html' %}
+
+{% block content_title %}Confirm Branch Deletion{% endblock %}
+
+{% block content_actions %}
+<a href="{% url 'admin_branch_list' %}" class="btn btn-primary">
+    <i class="fas fa-arrow-left"></i> Back to Branches
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Confirm Force Deletion of "{{ branch.branch }}"</h2>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i> Warning: This branch is currently assigned to {{ subject_count }} subject(s).
+        </div>
+        <p>Deleting this branch may cause issues with courses and attendance records that reference it.</p>
+        <p>Are you sure you want to proceed with the deletion?</p>
+        
+        <form action="{% url 'admin_branch_delete' branch_id=branch.id %}" method="post" style="display: inline-block;">
+            {% csrf_token %}
+            <input type="hidden" name="force_delete" value="true">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Yes, Force Delete
+            </button>
+            <a href="{% url 'admin_branch_list' %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %} 

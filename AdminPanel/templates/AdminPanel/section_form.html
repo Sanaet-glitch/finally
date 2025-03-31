@@ -1,0 +1,37 @@
+{% extends 'AdminPanel/base.html' %}
+
+{% block content_title %}{% if section %}Edit Section{% else %}Create New Section{% endif %}{% endblock %}
+
+{% block content_actions %}
+<a href="{% url 'admin_section_list' %}" class="btn btn-primary">
+    <i class="fas fa-arrow-left"></i> Back to Sections
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{% if section %}Edit Section "{{ section.section }}"{% else %}Create New Section{% endif %}</h2>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="section_name">Section Name <span style="color: red;">*</span></label>
+                <input type="text" class="form-control" id="section_name" name="section_name" required value="{{ section.section|default:'' }}" maxlength="2">
+                <small>Example: A, B, C, etc. (max 2 characters)</small>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> {% if section %}Update Section{% else %}Create Section{% endif %}
+                </button>
+                <a href="{% url 'admin_section_list' %}" class="btn btn-danger">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

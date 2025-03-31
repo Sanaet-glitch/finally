@@ -25,13 +25,25 @@ SECRET_KEY = "django-insecure-%&4dfwaayogd!r)=ot3hi1ybepd=s9d%$gkcomne)rq-a&fnmq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Get IP address dynamically for ALLOWED_HOSTS
 import socket
 
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.connect(("8.8.8.8", 80))
-ip = s.getsockname()[0]
+try:
+    # Try socket connection to get primary IP
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    ip = s.getsockname()[0]
+    s.close()
+except Exception:
+    # Fallback to hostname-based method
+    try:
+        hostname = socket.gethostname()
+        ip = socket.gethostbyname(hostname)
+    except Exception:
+        ip = "127.0.0.1"
 
-ALLOWED_HOSTS = ["127.0.0.1", f"{ip}", "localhost"]
+# Allow localhost, specific IP, and all local network IPs (192.168.x.x and 10.x.x.x)
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", ip, "*"]
 
 
 # Application definition
@@ -45,6 +57,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "FacultyView",
     "StudentView",
+    "AdminPanel",
 ]
 
 MIDDLEWARE = [
@@ -129,3 +142,16 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Authentication settings
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/login-redirect/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+# Cache settings
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
