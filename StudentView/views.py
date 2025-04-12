@@ -7,6 +7,10 @@ from django.contrib import messages
 from django.core.cache import cache
 import ipaddress
 from ipware import get_client_ip as ipware_get_client_ip
+from django.views.decorators.cache import never_cache
+import socket
+import requests
+from requests.exceptions import RequestException
 
 def get_client_ip(request):
     """Get the client's IP address from the request using ipware library"""
@@ -234,9 +238,46 @@ def view_student_enrollments(request):
     
     return render(request, 'StudentView/student_enrollments.html', {'show_results': False})
 
+@never_cache
 def student_attendance(request):
-    """Student-accessible view for marking attendance (No login required)"""
+    """View for students to mark attendance by scanning QR code"""
     subject_id = request.GET.get("subject")
+    
+    # Check for network connectivity to the faculty server
+    # This is important when the QR code directs to an IP that's no longer valid
+    host_param = request.GET.get('host')
+    if host_param:
+        original_host = host_param
+        try:
+            # Try to resolve the host
+            socket.gethostbyname(original_host)
+            
+            # If we got here, the host resolves, but we should check connectivity
+            try:
+                test_url = f"http://{original_host}:8000/"
+                requests.head(test_url, timeout=2)
+            except RequestException:
+                # Connection failed despite host resolving
+                return render(request, "StudentView/ConnectionError.html", {
+                    "error_message": f"Could not connect to attendance server at {original_host}. The server may be offline or inaccessible.",
+                    "suggestions": [
+                        "Make sure you are on the same network as your instructor",
+                        "Check if your instructor's server is running",
+                        "Try scanning the QR code again (instructor may need to refresh it)",
+                        "Ask your instructor to check server connectivity"
+                    ]
+                })
+        except socket.gaierror:
+            # Host cannot be resolved - IP address may have changed
+            return render(request, "StudentView/ConnectionError.html", {
+                "error_message": f"Unable to reach attendance server at {original_host}. The server address may have changed.",
+                "suggestions": [
+                    "Make sure you are on the same network as your instructor",
+                    "Ask your instructor to refresh the QR code as the network address may have changed",
+                    "Try scanning the QR code again after instructor refreshes it"
+                ]
+            })
+    
     if subject_id:
         try:
             selected_subject = Subject.objects.get(id=subject_id)

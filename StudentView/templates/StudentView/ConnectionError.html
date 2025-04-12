@@ -1,0 +1,61 @@
+{% extends 'StudentView/base.html' %}
+
+{% block title %}Connection Error{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">Connection Error</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>{{ error_message }}</strong>
+                    </div>
+                    
+                    {% if suggestions %}
+                    <div class="mt-4">
+                        <h5>Suggestions to resolve this issue:</h5>
+                        <ul class="list-group mt-3">
+                            {% for suggestion in suggestions %}
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                {{ suggestion }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-4">
+                        <button id="retry-button" class="btn btn-primary me-2">
+                            <i class="fas fa-sync-alt me-1"></i> Try Again
+                        </button>
+                        <a href="/" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <p class="mb-0 small">If the issue persists, please contact your instructor or system administrator.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Retry button reloads the page
+    document.getElementById('retry-button').addEventListener('click', function() {
+        location.reload();
+    });
+    
+    // Auto-retry after 30 seconds
+    setTimeout(function() {
+        location.reload();
+    }, 30000);
+</script>
+{% endblock %} 

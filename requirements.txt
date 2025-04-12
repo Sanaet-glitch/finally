@@ -2,3 +2,5 @@ qrcode
 django
 pillow
 django-ipware
+netifaces
+requests

@@ -61,15 +61,37 @@ Before you begin, ensure you have the following prerequisites installed:
    ```
    pip install -r requirements.txt
    ```
-4. **Run the Django Server:**
 
-   ```
-   python manage.py runserver 0.0.0.0:8000 
-   ```
+5. **Run the Resilient Server:**
 
-5. **Access the System:**
+   - On Windows:
+   ```
+   start_server.bat
+   ```
+   
+   - On Linux/macOS:
+   ```
+   chmod +x start_server.sh
+   ./start_server.sh
+   ```
+   
+   The resilient server provides automatic:
+   - IP detection and firewall configuration
+   - Auto-restart on failure
+   - Health monitoring
+   - Better error handling
+
+6. **Access the System:**
 
    Open your web browser and go to `http://localhost:8000` to use the system.
+
+### Alternative: Run Standard Django Server
+
+If you prefer to run the standard Django server without resilience features:
+
+```
+python manage.py runserver 0.0.0.0:8000 
+```
 
 ### Setting up Firewall settings for the first time
 

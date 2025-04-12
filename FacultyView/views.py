@@ -17,39 +17,83 @@ from AdminPanel.views import admin_required
 
 
 def qrgenerator(subject_id=None):
+    # Enhanced IP detection for more reliable QR code generation
     # Try multiple methods to get the correct local IP address
     ip = "127.0.0.1"  # Default fallback
     
     # Method 1: Socket connection (most reliable for getting IP visible to local network)
+    all_possible_ips = []
+    
     try:
+        # Primary method - socket connection to external service
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
+        primary_ip = s.getsockname()[0]
         s.close()
+        all_possible_ips.append(primary_ip)
     except Exception as e:
-        print(f"Error getting IP via socket: {str(e)}")
-        
-        # Method 2: Get hostname-based IP as fallback
+        print(f"Error getting IP via primary socket method: {str(e)}")
+    
+    # Method 2: Get all network interfaces
+    try:
+        import netifaces
+        # Get all interfaces except loopback
+        for interface in netifaces.interfaces():
+            try:
+                addresses = netifaces.ifaddresses(interface)
+                if netifaces.AF_INET in addresses:
+                    for address in addresses[netifaces.AF_INET]:
+                        if 'addr' in address and not address['addr'].startswith('127.'):
+                            all_possible_ips.append(address['addr'])
+            except Exception as e:
+                print(f"Error processing interface {interface}: {str(e)}")
+    except ImportError:
+        print("netifaces not installed, falling back to socket method")
+        try:
+            # Get all possible IPs through socket
+            hostname = socket.gethostname()
+            for ip_address in socket.gethostbyname_ex(hostname)[2]:
+                if not ip_address.startswith('127.'):
+                    all_possible_ips.append(ip_address)
+        except Exception as e:
+            print(f"Error getting IPs via hostname: {str(e)}")
+    
+    # Method 3 (Last resort): Use hostname-based IP as fallback
+    if not all_possible_ips:
         try:
             hostname = socket.gethostname()
-            ip = socket.gethostbyname(hostname)
-            if ip.startswith("127."):  # If we got localhost, try alternative
-                # Try to get all addresses and find a non-localhost one
-                for addr in socket.getaddrinfo(hostname, None):
-                    potential_ip = addr[4][0]
-                    if not potential_ip.startswith("127."):
-                        ip = potential_ip
-                        break
+            fallback_ip = socket.gethostbyname(hostname)
+            all_possible_ips.append(fallback_ip)
         except Exception as e:
-            print(f"Error getting IP via hostname: {str(e)}")
+            print(f"Error getting IP via hostname fallback: {str(e)}")
             # Keep the default 127.0.0.1
-
+            all_possible_ips.append(ip)
+    
+    # Filter for most likely external IPs (192.168.x.x, 10.x.x.x, etc.)
+    filtered_ips = [ip for ip in all_possible_ips if 
+                   (ip.startswith('192.168.') or 
+                    ip.startswith('10.') or 
+                    ip.startswith('172.') and 16 <= int(ip.split('.')[1]) <= 31)]
+    
+    # Use a valid IP from our list, preferring filtered ones
+    if filtered_ips:
+        ip = filtered_ips[0]  # Use the first valid filtered IP
+    elif all_possible_ips:
+        ip = all_possible_ips[0]  # Use any IP we found if no filtered ones
+    
+    print(f"Using IP address: {ip} (from candidates: {all_possible_ips})")
+    
+    # Generate multiple QR codes for different possible IPs to improve reliability
+    # We'll create one with the most likely IP and one with direct IP
     # Include subject parameter if provided
-    subject_param = f"?subject={subject_id}" if subject_id else ""
-    link = f"http://{ip}:8000/student/attendance{subject_param}"
-
+    # Generate URL with proper parameter formatting
+    if subject_id:
+        primary_link = f"http://{ip}:8000/student/attendance?subject={subject_id}&host={ip}"
+    else:
+        primary_link = f"http://{ip}:8000/student/attendance?host={ip}"
+    
     # Function to generate and display a QR code
-    def generate_qr_code(link):
+    def generate_qr_code(link, filename="qrcode.png"):
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -59,10 +103,11 @@ def qrgenerator(subject_id=None):
         qr.add_data(link)
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
-        img.save("FacultyView/static/FacultyView/qrcode.png")
+        img.save(f"FacultyView/static/FacultyView/{filename}")
 
-    generate_qr_code(link)
-    print(f"Generated QR code with link: {link}")  # Debug output
+    # Generate the primary QR code
+    generate_qr_code(primary_link)
+    print(f"Generated QR code with link: {primary_link}")  # Debug output
 
 
 @login_required
